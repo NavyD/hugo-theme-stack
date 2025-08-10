@@ -34,8 +34,11 @@
 		alt="{{ . }}"
 	{{ end }}
 	{{ if $galleryImage }}
-		class="gallery-image" 
+		class="gallery-image"
 		data-flex-grow="{{ div (mul $image.Width 100) $image.Height }}"
 		data-flex-basis="{{ div (mul $image.Width 240) $image.Height }}px"
 	{{ end }}
 >
+{{/* 虽然 Add 可以 flatten slice 但某些 md 中可能存在嵌套的问题 `[aa,bb,[cc]]` */}}
+{{/* slice $Permalink | .Page.Store.Add "imageLinks" */}}
+{{ .Page.Store.Get "imageLinks" | default slice | append $Permalink | .Page.Store.Set "imageLinks" }}

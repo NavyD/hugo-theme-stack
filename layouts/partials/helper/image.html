@@ -5,10 +5,19 @@
 {{ $isDefaultImage := and (ne .Type nil) (index .Context.Site.Params.defaultImage .Type) }}
 {{/* 在 layouts/partials/article/components/header.html 中被调用，artitle 类型表示仅在主页的文章列表中启用 */}}
 {{ if and .Context.Site.Params.ext.autoCover.enabled (not $imageValue) (not $isDefaultImage) (eq .Type "article")}}
-    {{/* 获取首个有序的本地图片 */}}
-    {{ $images := .Context.Resources.ByType "image" | sort }}
-    {{ if $images }}
-        {{ $imageValue = (index $images 0).RelPermalink }}
+    {{/* else with where (.Context.Store.Get "links" | default slice | dict "links") "links" "like" `^.+\.(jpe?g)|(png)$` | sort */}}
+    {{ with .Context.Store.Get "imageLinks" }}
+        {{ $localImageLinks := slice }}
+        {{ range . }}
+            {{/* 如果是相对的 url 则表示为本地图片链接，应该优先使用 */}}
+            {{ if not (urls.Parse .).IsAbs }}
+                {{ $localImageLinks = append . $localImageLinks }}
+            {{ end }}
+        {{ end }}
+        {{ $imageValue = index (default . $localImageLinks) 0 }}
+    {{ else with .Context.Resources.ByType "image" }}
+        {{/* 获取首个有序的本地图片 */}}
+        {{ $imageValue = (index (sort .) 0).RelPermalink }}
     {{ end }}
 {{ end }}
 

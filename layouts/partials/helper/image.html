@@ -2,6 +2,16 @@
 {{ $imageField := default "image" .Context.Site.Params.featuredImageField }}
 {{ $imageValue := index .Context.Params $imageField }}
 
+{{ $isDefaultImage := and (ne .Type nil) (index .Context.Site.Params.defaultImage .Type) }}
+{{/* 在 layouts/partials/article/components/header.html 中被调用，artitle 类型表示仅在主页的文章列表中启用 */}}
+{{ if and .Context.Site.Params.ext.autoCover.enabled (not $imageValue) (not $isDefaultImage) (eq .Type "article")}}
+    {{/* 获取首个有序的本地图片 */}}
+    {{ $images := .Context.Resources.ByType "image" | sort }}
+    {{ if $images }}
+        {{ $imageValue = (index $images 0).RelPermalink }}
+    {{ end }}
+{{ end }}
+
 {{ if $imageValue }}
     <!-- If page has `image` field set -->
     {{ $result = merge $result (dict "exists" true) }}
@@ -12,7 +22,7 @@
         {{ $result = merge $result (dict "permalink" $imageValue) }}
     {{ else }}
         {{ $pageResourceImage := .Context.Resources.GetMatch (printf "%s" ($imageValue | safeURL)) }}
-        
+
         {{ if $pageResourceImage }}
             <!-- If image is found under page bundle -->
             {{ $result = merge $result (dict "permalink" $pageResourceImage.RelPermalink) }}
@@ -28,7 +38,7 @@
 
     {{ end }}
 
-{{ else if and (ne .Type nil) (index .Context.Site.Params.defaultImage .Type) }}
+{{ else if $isDefaultImage }}
     <!-- Type arg is set, check for defaultImage setting -->
     {{ $defaultImageSetting := index .Context.Site.Params.defaultImage .Type }}
 
@@ -53,7 +63,7 @@
             <!-- External image -->
             {{ $result = merge $result (dict "permalink" (relURL $defaultImageSetting.src)) }}
         {{ end }}
-        
+
     {{ end }}
 
 {{ end }}

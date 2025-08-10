@@ -15,8 +15,12 @@
                 {{- .Title -}}
             </a>
         </h2>
-    
-        {{ with .Params.description }}
+        {{ $subtitle := .Params.description }}
+        {{/* 如果当前 post 的 frontmatter 中不存在 description 则获取 summary 作为 description */}}
+        {{ if and .Site.Params.ext.autoDescription (not $subtitle) }}
+            {{ $subtitle = partial "data/description" . }}
+        {{ end }}
+        {{ with $subtitle }}
         <h3 class="article-subtitle">
             {{ . }}
         </h3>

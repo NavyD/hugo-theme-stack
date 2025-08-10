@@ -12,6 +12,13 @@
 {{ else if .IsPage }}
     <!-- Use page summary -->
     {{ $description = .Summary }}
+    {{/*
+        如果当前 summary 被截断则插入 `...` 表示被截断
+        Content summaries: https://gohugo.io/content-management/summaries/#automatic-summary
+    */}}
+    {{ if .Truncated }}
+        {{ $description = printf "%s ..." $description }}
+    {{ end }}
 {{ end }}
 
 {{ return (replaceRE "\n" " " $description | plainify) }}

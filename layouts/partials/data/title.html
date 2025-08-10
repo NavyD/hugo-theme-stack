@@ -8,6 +8,13 @@
     {{ $pages := where .Site.RegularPages "Section" "in" .Site.Params.mainSections }}
     {{ $notHidden := where .Site.RegularPages "Params.hidden" "!=" true }}
     {{ $filtered := ($pages | intersect $notHidden) }}
+    {{ if .Site.Params.ext.lastmodSort }}
+        {{/*
+            对于首页中的文章列表用 lastmod 排序
+            [how to sort by lastmod? #987](https://github.com/CaiJimmy/hugo-theme-stack/discussions/987#discussioncomment-8927154)
+        */}}
+        {{ $filtered = $filtered.ByLastmod.Reverse }}
+    {{ end }}
     {{ $pag := .Paginate ($filtered) }}
 
     {{ if .Paginator.HasPrev }}
@@ -29,7 +36,7 @@
     {{ if .Paginator.HasPrev }}
         <!-- Add page number-->
         {{ $title = $title | append " - " .Paginator }}
-    {{ end }} 
+    {{ end }}
 
     {{ $title = $title | append " - " $siteTitle }}
     {{ $title = delimit $title "" }}

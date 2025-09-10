@@ -1,4 +1,7 @@
 <article class="{{ if .Params.image }}has-image {{ end }}main-article">
+    {{/* 表示 header 处于文章内部被调用 */}}
+    {{ .Store.Set "articleHeaderType" "article" }}
+
     {{ partial "article/components/header" . }}
 
     {{ partial "article/components/content" . }}

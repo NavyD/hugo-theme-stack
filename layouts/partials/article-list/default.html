@@ -1,4 +1,6 @@
 {{ $image := partialCached "helper/image" (dict "Context" . "Type" "articleList") .RelPermalink "articleList" }}
 <article class="{{ if $image.exists }}has-image{{ end }}">
+    {{/* 表示 header 处于首页的文章列表被调用 */}}
+    {{ .Store.Set "articleHeaderType" "articleList" }}
     {{ partial "article/components/header" . }}
 </article>

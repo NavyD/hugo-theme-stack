@@ -1,6 +1,8 @@
 <header class="article-header">
     {{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
-    {{ if $image.exists }}
+    {{ $isHeaderInArticleOrList := .Store.Get "articleHeaderType" | eq "article" }}
+    {{/* 当一个图片存在时，如果这个图片是 autocover 且 处于文章内部页面 且 配置了隐藏 时不显示图片 */}}
+    {{ if and $image.exists (and $image.isAutoCover $isHeaderInArticleOrList .Page.Site.Params.ext.autoCover.hideInArticlePage | not) }}
         <div class="article-image">
             <a href="{{ .RelPermalink }}">
                 {{ if $image.resource }}

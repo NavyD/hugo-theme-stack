@@ -16,8 +16,9 @@
             </a>
         </h2>
         {{ $subtitle := .Params.description }}
+        {{ $isHeaderInArticleOrList := .Store.Get "articleHeaderType" | eq "article"}}
         {{/* 如果当前 post 的 frontmatter 中不存在 description 则获取 summary 作为 description */}}
-        {{ if and .Site.Params.ext.autoDescription (not $subtitle) }}
+        {{ if and .Site.Params.ext.autoDescription.enabled (not $subtitle) (and .Site.Params.ext.autoDescription.hideInArticlePage $isHeaderInArticleOrList | not) }}
             {{ $subtitle = partial "data/description" . }}
         {{ end }}
         {{ with $subtitle }}

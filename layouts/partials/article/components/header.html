@@ -33,5 +33,6 @@
         </div>
     {{ end }}
 
-    {{ partialCached "article/components/details" . .RelPermalink }}
+    {{/* 使用 isHeaderInArticleOrList 作为缓存 key 的一部分以避免在 article/list 2 次不同的调用时使用缓存导致问题 */}}
+    {{ partialCached "article/components/details" . .RelPermalink $isHeaderInArticleOrList }}
 </header>
